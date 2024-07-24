@@ -51,7 +51,7 @@ const PartnerHome: React.FC = () => {
       formDataToSend.append('file', file);
       
       try {
-        const response = await axios.post('http://localhost:3002/upload', formDataToSend, {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/upload`, formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
