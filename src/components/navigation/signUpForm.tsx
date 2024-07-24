@@ -32,7 +32,7 @@ const SignUpForm: FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/employees`, formData)
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/employees`, formData)
       console.log('Data submitted successfully:', response.data)
       alert('Registration successful')
       router.reload() // Refresh the page

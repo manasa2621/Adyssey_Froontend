@@ -29,7 +29,7 @@ const SignInForm: FC = () => {
     }
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/login`, formData)
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/login`, formData)
       const { statuscode, message, role } = response.data
 
       if (statuscode === 200) {
