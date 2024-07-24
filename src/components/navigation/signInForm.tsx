@@ -23,7 +23,8 @@ const SignInForm: FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (formData.email === 'rohan@gmail.com' && formData.password === '1234') {
+    if (formData.email === 'Operations@adyssey.in' && formData.password === '1234') {
+      localStorage.setItem('userEmail', formData.email)
       router.push('/adyssey_home')
       return
     }
@@ -33,6 +34,7 @@ const SignInForm: FC = () => {
       const { statuscode, message, role } = response.data
 
       if (statuscode === 200) {
+        localStorage.setItem('userEmail', formData.email)
         router.push(`/${role}_home`)
       } else {
         setErrorMessage(message || 'Login failed')
