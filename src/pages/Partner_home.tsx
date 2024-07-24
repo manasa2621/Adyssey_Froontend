@@ -67,7 +67,7 @@ const PartnerHome: React.FC = () => {
     }
   };
 
-  const handleSubmit =async  () => {
+  const handleSubmit = async () => {
     const userEmail = localStorage.getItem('userEmail') || '';
     const allDetails = {
       vehicleNumber: formData.vehicleNumber,
@@ -118,7 +118,7 @@ const PartnerHome: React.FC = () => {
           borderRadius: 2,
           boxShadow: 3,
         }}
-        onSubmit={(e) => {
+        onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
           e.preventDefault();
           handleSubmit();
         }}
