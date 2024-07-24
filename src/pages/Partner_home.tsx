@@ -73,6 +73,34 @@ const PartnerHome: React.FC = () => {
           </Select>
         </FormControl>
         <TextField
+          label="Vehicle Dimention"
+          variant="outlined"
+          required
+          name="vehicleNumber"
+          value={formData.vehicleNumber}
+          onChange={handleChange}
+          fullWidth
+        />
+        <TextField
+          label="Route of the vehicle"
+          variant="outlined"
+          required
+          name="vehicleNumber"
+          value={formData.vehicleNumber}
+          onChange={handleChange}
+          fullWidth
+        />
+<FormControl variant="outlined" required fullWidth>
+          <InputLabel>Status</InputLabel>
+          <Select name="vehicleType" value={formData.vehicleType} label="Vehicle Type">
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value="Car">Active</MenuItem>
+            <MenuItem value="Truck">Inactive</MenuItem>
+          </Select>
+        </FormControl>
+        <TextField
           label="Registration Number"
           variant="outlined"
           required
