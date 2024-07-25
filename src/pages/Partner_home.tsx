@@ -122,7 +122,7 @@ const PartnerHome: React.FC = () => {
           borderRadius: 2,
           boxShadow: 3,
         }}
-        onSubmit={(e) => {
+        onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
           e.preventDefault()
           handleSubmit()
         }}
