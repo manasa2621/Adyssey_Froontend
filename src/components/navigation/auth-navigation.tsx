@@ -26,7 +26,12 @@ const AuthNavigation: FC = () => {
       <StyledButton onClick={handleOpenSignUp}>Sign Up</StyledButton>
 
       {/* Sign Up Modal */}
-      <Modal open={openSignUp} onClose={handleCloseSignUp} aria-labelledby="sign-up-modal" aria-describedby="sign-up-form">
+      <Modal
+        open={openSignUp}
+        onClose={handleCloseSignUp}
+        aria-labelledby="sign-up-modal"
+        aria-describedby="sign-up-form"
+      >
         <Box
           sx={{
             position: 'absolute',
@@ -46,7 +51,12 @@ const AuthNavigation: FC = () => {
       </Modal>
 
       {/* Sign In Modal */}
-      <Modal open={openSignIn} onClose={handleCloseSignIn} aria-labelledby="sign-in-modal" aria-describedby="sign-in-form">
+      <Modal
+        open={openSignIn}
+        onClose={handleCloseSignIn}
+        aria-labelledby="sign-in-modal"
+        aria-describedby="sign-in-form"
+      >
         <Box
           sx={{
             position: 'absolute',

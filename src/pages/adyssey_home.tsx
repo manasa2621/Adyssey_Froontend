@@ -10,18 +10,24 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 
 interface TruckingData {
   id: number;
+  name: string;
   vehicle_number: string;
   vehicle_type: string;
   registration_number: string;
-  vehicle_dimention: string;
-  vehicle_route: string;
+  source: string;
+  destination: string | null;
   insurance_url: string | null;
   tax_url: string | null;
   rc_url: string | null;
-  email: string;
+  company_name: string;
+  status: boolean;
 }
 
 const TruckingList: React.FC = () => {
@@ -31,7 +37,7 @@ const TruckingList: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/trucking`);
+        const response = await axios.get(`http://localhost:3002/trucking`);
         setData(response.data);
       } catch (error) {
         console.error('Error fetching trucking data:', error);
@@ -41,9 +47,21 @@ const TruckingList: React.FC = () => {
     fetchData();
   }, []);
 
-  const filteredData = data.filter(item =>
-    item.vehicle_route.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleStatusChange = async (id: number, vehicleNumber: string, status: boolean) => {
+    try {
+      await axios.post(`http://localhost:3002/activate`, {
+        vehicleNumber,
+        status,
+      });
+      // Refresh data after update
+      const response = await axios.get(`http://localhost:3002/trucking`);
+      setData(response.data);
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
+  };
+
+  const filteredData = data.filter((item) => item.source && item.source.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -62,41 +80,69 @@ const TruckingList: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>Employee Name</TableCell>
               <TableCell>Vehicle Number</TableCell>
               <TableCell>Vehicle Type</TableCell>
               <TableCell>Registration Number</TableCell>
-              <TableCell>Vehicle Dimension</TableCell>
-              <TableCell>Vehicle Route</TableCell>
-              <TableCell>Insurance URL</TableCell>
-              <TableCell>Tax URL</TableCell>
-              <TableCell>RC URL</TableCell>
-              <TableCell>Email</TableCell>
+              <TableCell>Vehicle Source</TableCell>
+              <TableCell>Vehicle Destination</TableCell>
+              <TableCell>Insurance</TableCell>
+              <TableCell>Tax</TableCell>
+              <TableCell>RC</TableCell>
+              <TableCell>Company Name</TableCell>
+              <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredData.map((row) => (
               <TableRow key={row.id}>
+                <TableCell>{row.name}</TableCell>
                 <TableCell>{row.vehicle_number}</TableCell>
                 <TableCell>{row.vehicle_type}</TableCell>
                 <TableCell>{row.registration_number}</TableCell>
-                <TableCell>{row.vehicle_dimention}</TableCell>
-                <TableCell>{row.vehicle_route}</TableCell>
+                <TableCell>{row.source}</TableCell>
+                <TableCell>{row.destination}</TableCell>
                 <TableCell>
                   {row.insurance_url ? (
-                    <a href={row.insurance_url} target="_blank" rel="noopener noreferrer">View</a>
-                  ) : 'N/A'}
+                    <a href={row.insurance_url} target="_blank" rel="noopener noreferrer">
+                      View
+                    </a>
+                  ) : (
+                    'N/A'
+                  )}
                 </TableCell>
                 <TableCell>
                   {row.tax_url ? (
-                    <a href={row.tax_url} target="_blank" rel="noopener noreferrer">View</a>
-                  ) : 'N/A'}
+                    <a href={row.tax_url} target="_blank" rel="noopener noreferrer">
+                      View
+                    </a>
+                  ) : (
+                    'N/A'
+                  )}
                 </TableCell>
                 <TableCell>
                   {row.rc_url ? (
-                    <a href={row.rc_url} target="_blank" rel="noopener noreferrer">View</a>
-                  ) : 'N/A'}
+                    <a href={row.rc_url} target="_blank" rel="noopener noreferrer">
+                      View
+                    </a>
+                  ) : (
+                    'N/A'
+                  )}
                 </TableCell>
-                <TableCell>{row.email}</TableCell>
+                <TableCell>{row.company_name}</TableCell>
+                <TableCell>
+                  <FormControl fullWidth>
+                    <InputLabel>Status</InputLabel>
+                    <Select
+                      value={row.status ? 'true' : 'false'}
+                      label="Status"
+                      onChange={(e) => handleStatusChange(row.id, row.vehicle_number, e.target.value === 'true')}
+                    >
+                      <MenuItem value="true">True</MenuItem>
+                      <MenuItem value="false">False</MenuItem>
+                    </Select>
+                  </FormControl>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
