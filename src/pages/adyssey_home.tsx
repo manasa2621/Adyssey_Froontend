@@ -1,67 +1,69 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
 
 interface TruckingData {
-  id: number;
-  name: string;
-  vehicle_number: string;
-  vehicle_type: string;
-  registration_number: string;
-  source: string;
-  destination: string | null;
-  insurance_url: string | null;
-  tax_url: string | null;
-  rc_url: string | null;
-  company_name: string;
-  status: boolean;
+  id: number
+  name: string
+  vehicle_number: string
+  vehicle_type: string
+  registration_number: string
+  source: string
+  destination: string | null
+  insurance_url: string | null
+  tax_url: string | null
+  rc_url: string | null
+  company_name: string
+  status: boolean
 }
 
 const TruckingList: React.FC = () => {
-  const [data, setData] = useState<TruckingData[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [data, setData] = useState<TruckingData[]>([])
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3002/trucking`);
-        setData(response.data);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/trucking`)
+        setData(response.data)
       } catch (error) {
-        console.error('Error fetching trucking data:', error);
+        console.error('Error fetching trucking data:', error)
       }
-    };
+    }
 
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   const handleStatusChange = async (id: number, vehicleNumber: string, status: boolean) => {
     try {
-      await axios.post(`http://localhost:3002/activate`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/activate`, {
         vehicleNumber,
         status,
-      });
+      })
       // Refresh data after update
-      const response = await axios.get(`http://localhost:3002/trucking`);
-      setData(response.data);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/trucking`)
+      setData(response.data)
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error('Error updating status:', error)
     }
-  };
+  }
 
-  const filteredData = data.filter((item) => item.source && item.source.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredData = data.filter(
+    (item) => item.source && item.source.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -149,7 +151,7 @@ const TruckingList: React.FC = () => {
         </Table>
       </TableContainer>
     </Box>
-  );
-};
+  )
+}
 
-export default TruckingList;
+export default TruckingList

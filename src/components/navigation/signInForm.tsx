@@ -30,11 +30,12 @@ const SignInForm: FC = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3002/login', formData)
-      const { statuscode, message, role } = response.data
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/login`, formData)
+      const { statuscode, message, role,company } = response.data
 
       if (statuscode === 200) {
         localStorage.setItem('userEmail', formData.email)
+        localStorage.setItem('company', company)
         router.push(`/${role}_home`)
       } else {
         setErrorMessage(message || 'Login failed')

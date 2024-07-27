@@ -1,13 +1,13 @@
-import React from 'react'
-import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material'
-import { useRouter } from 'next/router'
+import React from 'react';
+import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
+import { useRouter } from 'next/router';
 
-const UserHome: React.FC = () => {
-  const router = useRouter()
+const Revenue: React.FC = () => {
+  const router = useRouter();
 
   const handleNavigation = (path: string) => {
-    router.push(path)
-  }
+    router.push(path);
+  };
 
   return (
     <Box>
@@ -37,12 +37,12 @@ const UserHome: React.FC = () => {
         </Toolbar>
       </AppBar>
       <Box component="main" sx={{ p: 3 }}>
-        <Typography variant="h4">Welcome to the User Home Page</Typography>
+        <Typography variant="h4">Welcome to Revenue</Typography>
         {/* Add content here */}
       </Box>
      
     </Box>
-  )
-}
+  );
+};
 
-export default UserHome
+export default Revenue;

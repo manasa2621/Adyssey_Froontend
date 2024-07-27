@@ -1,107 +1,107 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import { AppBar, Toolbar, Button, TextField, Grid, Container } from '@mui/material';
-import { useRouter } from 'next/router';
-import Link from '@mui/material/Link';
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Paper from '@mui/material/Paper'
+import { AppBar, Toolbar, Button, TextField, Grid, Container } from '@mui/material'
+import { useRouter } from 'next/router'
+import Link from '@mui/material/Link'
 
 const Profile: React.FC = () => {
-  const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const [formData, setFormData] = useState<any>(null)
   const [files, setFiles] = useState<{ [key: string]: File | null }>({
     insurance: null,
     tax: null,
     rc: null,
-  });
-  const router = useRouter();
+  })
+  const router = useRouter()
 
   const handleNavigation = (path: string) => {
-    router.push(path);
-  };
+    router.push(path)
+  }
 
   const handleEdit = () => {
-    setIsEditing(true);
-    setFormData(profile);
-  };
+    setIsEditing(true)
+    setFormData(profile)
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData({
       ...formData,
       [name]: value,
-    });
-  };
+    })
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, files: fileList } = e.target;
+    const { name, files: fileList } = e.target
     if (fileList && fileList[0]) {
       setFiles({
         ...files,
         [name]: fileList[0],
-      });
+      })
     }
-  };
+  }
 
   const handleSave = async () => {
     try {
-      const formDataToSubmit = new FormData();
-      formDataToSubmit.append('name', formData.name);
-      formDataToSubmit.append('company_name', formData.company_name);
-      formDataToSubmit.append('email', formData.email);
-      formDataToSubmit.append('vehicle_number', formData.vehicle_number);
-      formDataToSubmit.append('vehicle_type', formData.vehicle_type);
-      formDataToSubmit.append('registration_number', formData.registration_number);
-      formDataToSubmit.append('status', formData.status ? 'true' : 'false');
+      const formDataToSubmit = new FormData()
+      formDataToSubmit.append('name', formData.name)
+      formDataToSubmit.append('company_name', formData.company_name)
+      formDataToSubmit.append('email', formData.email)
+      formDataToSubmit.append('vehicle_number', formData.vehicle_number)
+      formDataToSubmit.append('vehicle_type', formData.vehicle_type)
+      formDataToSubmit.append('registration_number', formData.registration_number)
+      formDataToSubmit.append('status', formData.status ? 'true' : 'false')
 
       // Append files
-      if (files.insurance) formDataToSubmit.append('insurance', files.insurance);
-      if (files.tax) formDataToSubmit.append('tax', files.tax);
-      if (files.rc) formDataToSubmit.append('rc', files.rc);
+      if (files.insurance) formDataToSubmit.append('insurance', files.insurance)
+      if (files.tax) formDataToSubmit.append('tax', files.tax)
+      if (files.rc) formDataToSubmit.append('rc', files.rc)
 
-      await axios.post(`http://localhost:3002/update_profile`, formDataToSubmit, {
+      await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/update_profile`, formDataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      });
+      })
 
       // Refresh data after update
-      const response = await axios.get(`http://localhost:3002/user_profile?email=${formData.email}`);
-      setProfile(response.data[0]);
-      setIsEditing(false);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/user_profile?email=${formData.email}`)
+      setProfile(response.data[0])
+      setIsEditing(false)
     } catch (error) {
-      setError('Error updating profile data');
+      setError('Error updating profile data')
     }
-  };
+  }
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const userEmail = localStorage.getItem('userEmail');
+        const userEmail = localStorage.getItem('userEmail')
         if (!userEmail) {
-          setError('No email found in local storage');
-          return;
+          setError('No email found in local storage')
+          return
         }
 
-        const response = await axios.get(`http://localhost:3002/user_profile?email=${userEmail}`);
-        setProfile(response.data[0]);
-        setFormData(response.data[0]); // Initialize form data
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/user_profile?email=${userEmail}`)
+        setProfile(response.data[0])
+        setFormData(response.data[0]) // Initialize form data
       } catch (error) {
-        setError('Error fetching profile data');
+        setError('Error fetching profile data')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchProfile();
-  }, []);
+    fetchProfile()
+  }, [])
 
-  if (loading) return <Typography>Loading...</Typography>;
-  if (error) return <Typography color="error">{error}</Typography>;
+  if (loading) return <Typography>Loading...</Typography>
+  if (error) return <Typography color="error">{error}</Typography>
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -110,12 +110,24 @@ const Profile: React.FC = () => {
           <Typography variant="h6" sx={{ flexGrow: 1 }} onClick={() => handleNavigation('/user_home')}>
             User Home
           </Typography>
-          <Button color="inherit" onClick={() => handleNavigation('/our-fleet')}>Our Fleet</Button>
-          <Button color="inherit" onClick={() => handleNavigation('/revenue')}>Revenue</Button>
-          <Button color="inherit" onClick={() => handleNavigation('/contract')}>Contract</Button>
-          <Button color="inherit" onClick={() => handleNavigation('/profile')}>Profile</Button>
-          <Button color="inherit" onClick={() => handleNavigation('/help')}>Help</Button>
-          <Button color="inherit" onClick={() => handleNavigation('/')}>Logout</Button>
+          <Button color="inherit" onClick={() => handleNavigation('/our-fleet')}>
+            Our Fleet
+          </Button>
+          <Button color="inherit" onClick={() => handleNavigation('/revenue')}>
+            Revenue
+          </Button>
+          <Button color="inherit" onClick={() => handleNavigation('/contract')}>
+            Contract
+          </Button>
+          <Button color="inherit" onClick={() => handleNavigation('/profile')}>
+            Profile
+          </Button>
+          <Button color="inherit" onClick={() => handleNavigation('/help')}>
+            Help
+          </Button>
+          <Button color="inherit" onClick={() => handleNavigation('/')}>
+            Logout
+          </Button>
         </Toolbar>
       </AppBar>
       <Container sx={{ marginTop: 3 }}>
@@ -126,13 +138,7 @@ const Profile: React.FC = () => {
           {isEditing ? (
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Name"
-                  name="name"
-                  value={formData.name || ''}
-                  onChange={handleChange}
-                  fullWidth
-                />
+                <TextField label="Name" name="name" value={formData.name || ''} onChange={handleChange} fullWidth />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -181,25 +187,13 @@ const Profile: React.FC = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <input
-                  type="file"
-                  name="insurance"
-                  onChange={handleFileChange}
-                />
+                <input type="file" name="insurance" onChange={handleFileChange} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <input
-                  type="file"
-                  name="tax"
-                  onChange={handleFileChange}
-                />
+                <input type="file" name="tax" onChange={handleFileChange} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <input
-                  type="file"
-                  name="rc"
-                  onChange={handleFileChange}
-                />
+                <input type="file" name="rc" onChange={handleFileChange} />
               </Grid>
               <Grid item xs={12}>
                 <Button variant="contained" color="primary" onClick={handleSave}>
@@ -216,7 +210,7 @@ const Profile: React.FC = () => {
               <Typography variant="h6">Vehicle Type: {profile.vehicle_type}</Typography>
               <Typography variant="h6">Registration Number: {profile.registration_number}</Typography>
               <Typography variant="h6">
-                Insurance: 
+                Insurance:
                 {profile.insurance_url ? (
                   <Link href={profile.insurance_url} target="_blank" rel="noopener noreferrer">
                     View
@@ -226,7 +220,7 @@ const Profile: React.FC = () => {
                 )}
               </Typography>
               <Typography variant="h6">
-                Tax: 
+                Tax:
                 {profile.tax_url ? (
                   <Link href={profile.tax_url} target="_blank" rel="noopener noreferrer">
                     View
@@ -236,7 +230,7 @@ const Profile: React.FC = () => {
                 )}
               </Typography>
               <Typography variant="h6">
-                RC: 
+                RC:
                 {profile.rc_url ? (
                   <Link href={profile.rc_url} target="_blank" rel="noopener noreferrer">
                     View
@@ -254,7 +248,7 @@ const Profile: React.FC = () => {
         </Paper>
       </Container>
     </Box>
-  );
-};
+  )
+}
 
-export default Profile;
+export default Profile

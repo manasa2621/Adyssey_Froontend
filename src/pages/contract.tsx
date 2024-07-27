@@ -2,7 +2,7 @@ import React from 'react'
 import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material'
 import { useRouter } from 'next/router'
 
-const UserHome: React.FC = () => {
+const Contract: React.FC = () => {
   const router = useRouter()
 
   const handleNavigation = (path: string) => {
@@ -37,12 +37,11 @@ const UserHome: React.FC = () => {
         </Toolbar>
       </AppBar>
       <Box component="main" sx={{ p: 3 }}>
-        <Typography variant="h4">Welcome to the User Home Page</Typography>
-        {/* Add content here */}
+        <Typography variant="h4">Welcome to contract page</Typography>
       </Box>
-     
+      
     </Box>
   )
 }
 
-export default UserHome
+export default Contract
