@@ -9,6 +9,12 @@ import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Cancel'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
+import MenuIcon from '@mui/icons-material/Menu'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import Drawer from '@mui/material/Drawer'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
 
 const Profile: React.FC = () => {
   const [profile, setProfile] = useState<any>(null)
@@ -22,6 +28,8 @@ const Profile: React.FC = () => {
     rc: null,
   })
   const router = useRouter()
+  const isSmallScreen = useMediaQuery('(max-width:600px)')
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const handleNavigation = (path: string) => {
     router.push(path)
@@ -144,31 +152,79 @@ const Profile: React.FC = () => {
     fetchProfile()
   }, [])
 
+  const handleDrawerToggle = () => {
+    setDrawerOpen(!drawerOpen)
+  }
+
+  const drawer = (
+    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+      <Typography variant="h6" sx={{ my: 2 }}>
+        User Home
+      </Typography>
+      <List>
+        <ListItem button onClick={() => handleNavigation('/user_home')}>
+          <ListItemText primary="User Home" />
+        </ListItem>
+        <ListItem button onClick={() => handleNavigation('/our-fleet')}>
+          <ListItemText primary="Our Fleet" />
+        </ListItem>
+        <ListItem button onClick={() => handleNavigation('/revenue')}>
+          <ListItemText primary="Revenue" />
+        </ListItem>
+        <ListItem button onClick={() => handleNavigation('/contract')}>
+          <ListItemText primary="Contract" />
+        </ListItem>
+        <ListItem button onClick={() => handleNavigation('/profile')}>
+          <ListItemText primary="Profile" />
+        </ListItem>
+        <ListItem button onClick={() => handleNavigation('/help')}>
+          <ListItemText primary="Help" />
+        </ListItem>
+        <ListItem button onClick={() => handleNavigation('/')}>
+          <ListItemText primary="Logout" />
+        </ListItem>
+      </List>
+    </Box>
+  )
+
   return (
     <Box sx={{ padding: 3 }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }} onClick={() => handleNavigation('/user_home')}>
-            User Home
-          </Typography>
-          <Button color="inherit" onClick={() => handleNavigation('/our-fleet')}>
-            Our Fleet
-          </Button>
-          <Button color="inherit" onClick={() => handleNavigation('/revenue')}>
-            Revenue
-          </Button>
-          <Button color="inherit" onClick={() => handleNavigation('/contract')}>
-            Contract
-          </Button>
-          <Button color="inherit" onClick={() => handleNavigation('/profile')}>
-            Profile
-          </Button>
-          <Button color="inherit" onClick={() => handleNavigation('/help')}>
-            Help
-          </Button>
-          <Button color="inherit" onClick={() => handleNavigation('/')}>
-            Logout
-          </Button>
+          {isSmallScreen ? (
+            <>
+              <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleDrawerToggle}>
+                <MenuIcon />
+              </IconButton>
+              <Drawer anchor="left" open={drawerOpen} onClose={handleDrawerToggle}>
+                {drawer}
+              </Drawer>
+            </>
+          ) : (
+            <>
+              <Typography variant="h6" sx={{ flexGrow: 1 }} onClick={() => handleNavigation('/user_home')}>
+                User Home
+              </Typography>
+              <Button color="inherit" onClick={() => handleNavigation('/our-fleet')}>
+                Our Fleet
+              </Button>
+              <Button color="inherit" onClick={() => handleNavigation('/revenue')}>
+                Revenue
+              </Button>
+              <Button color="inherit" onClick={() => handleNavigation('/contract')}>
+                Contract
+              </Button>
+              <Button color="inherit" onClick={() => handleNavigation('/profile')}>
+                Profile
+              </Button>
+              <Button color="inherit" onClick={() => handleNavigation('/help')}>
+                Help
+              </Button>
+              <Button color="inherit" onClick={() => handleNavigation('/')}>
+                Logout
+              </Button>
+            </>
+          )}
         </Toolbar>
       </AppBar>
       <Container sx={{ marginTop: 3 }}>
@@ -233,87 +289,104 @@ const Profile: React.FC = () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Button variant="outlined" component="label" fullWidth startIcon={<AttachFileIcon />}>
+                  <Button variant="contained" component="label">
                     Upload Insurance
-                    <input type="file" name="insurance" onChange={handleFileChange} hidden />
+                    <AttachFileIcon sx={{ ml: 1 }} />
+                    <input
+                      type="file"
+                      name="insurance"
+                      onChange={handleFileChange}
+                      hidden
+                    />
                   </Button>
+                  {profile.insurance_url && (
+                    <a href={profile.insurance_url} target="_blank" rel="noopener noreferrer">
+                      View Insurance
+                    </a>
+                  )}
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Button variant="outlined" component="label" fullWidth startIcon={<AttachFileIcon />}>
+                  <Button variant="contained" component="label">
                     Upload Tax
-                    <input type="file" name="tax" onChange={handleFileChange} hidden />
+                    <AttachFileIcon sx={{ ml: 1 }} />
+                    <input
+                      type="file"
+                      name="tax"
+                      onChange={handleFileChange}
+                      hidden
+                    />
                   </Button>
+                  {profile.tax_url && (
+                    <a href={profile.tax_url} target="_blank" rel="noopener noreferrer">
+                      View Tax
+                    </a>
+                  )}
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Button variant="outlined" component="label" fullWidth startIcon={<AttachFileIcon />}>
+                  <Button variant="contained" component="label">
                     Upload RC
-                    <input type="file" name="rc" onChange={handleFileChange} hidden />
+                    <AttachFileIcon sx={{ ml: 1 }} />
+                    <input
+                      type="file"
+                      name="rc"
+                      onChange={handleFileChange}
+                      hidden
+                    />
                   </Button>
+                  {profile.rc_url && (
+                    <a href={profile.rc_url} target="_blank" rel="noopener noreferrer">
+                      View RC
+                    </a>
+                  )}
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Button variant="contained" color="primary" onClick={handleSave} startIcon={<SaveIcon />} fullWidth>
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SaveIcon />}
+                    onClick={handleSave}
+                  >
                     Save
                   </Button>
-                  <Button variant="outlined" color="secondary" onClick={() => setIsEditing(false)} startIcon={<CancelIcon />} fullWidth>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<CancelIcon />}
+                    onClick={() => setIsEditing(false)}
+                    sx={{ ml: 2 }}
+                  >
                     Cancel
                   </Button>
                 </Grid>
               </Grid>
             ) : (
               <Box>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h6">Name:</Typography>
-                    <Typography>{profile.name}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h6">Company Name:</Typography>
-                    <Typography>{profile.company_name}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h6">Email:</Typography>
-                    <Typography>{profile.email}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h6">Vehicle Number:</Typography>
-                    <Typography>{profile.vehicle_number}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h6">Vehicle Type:</Typography>
-                    <Typography>{profile.vehicle_type}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h6">Registration Number:</Typography>
-                    <Typography>{profile.registration_number}</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Typography variant="h6">Insurance:</Typography>
-                    {profile.insurance_url ? (
-                      <Avatar variant="rounded" src={profile.insurance_url} sx={{ width: 100, height: 100 }} />
-                    ) : (
-                      <Typography>No Insurance Document</Typography>
-                    )}
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Typography variant="h6">Tax:</Typography>
-                    {profile.tax_url ? (
-                      <Avatar variant="rounded" src={profile.tax_url} sx={{ width: 100, height: 100 }} />
-                    ) : (
-                      <Typography>No Tax Document</Typography>
-                    )}
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <Typography variant="h6">RC:</Typography>
-                    {profile.rc_url ? (
-                      <Avatar variant="rounded" src={profile.rc_url} sx={{ width: 100, height: 100 }} />
-                    ) : (
-                      <Typography>No RC Document</Typography>
-                    )}
-                  </Grid>
-                </Grid>
-                <Button variant="contained" color="primary" onClick={handleEdit} startIcon={<EditIcon />} sx={{ marginTop: 2 }}>
-                  Edit
-                </Button>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body1">Name: {profile.name}</Typography>
+                  <IconButton color="primary" onClick={handleEdit}>
+                    <EditIcon />
+                  </IconButton>
+                </Box>
+                <Typography variant="body1">Company Name: {profile.company_name}</Typography>
+                <Typography variant="body1">Email: {profile.email}</Typography>
+                <Typography variant="body1">Vehicle Number: {profile.vehicle_number}</Typography>
+                <Typography variant="body1">Vehicle Type: {profile.vehicle_type}</Typography>
+                <Typography variant="body1">Registration Number: {profile.registration_number}</Typography>
+                {profile.insurance_url && (
+                  <Typography variant="body1">
+                    Insurance: <a href={profile.insurance_url} target="_blank" rel="noopener noreferrer">View</a>
+                  </Typography>
+                )}
+                {profile.tax_url && (
+                  <Typography variant="body1">
+                    Tax: <a href={profile.tax_url} target="_blank" rel="noopener noreferrer">View</a>
+                  </Typography>
+                )}
+                {profile.rc_url && (
+                  <Typography variant="body1">
+                    RC: <a href={profile.rc_url} target="_blank" rel="noopener noreferrer">View</a>
+                  </Typography>
+                )}
               </Box>
             )}
           </Paper>

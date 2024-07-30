@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { AppBar, Toolbar, Typography, Box, Button, Container, TextField, Grid, Card, CardContent } from '@mui/material'
+import { AppBar, Toolbar, Typography, Box, Button, Container, TextField, Grid, Card, CardContent, IconButton, Drawer, List, ListItem, ListItemText } from '@mui/material'
 import { useRouter } from 'next/router'
+import MenuIcon from '@mui/icons-material/Menu'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import axios from 'axios'
 
 interface RouteDetails {
@@ -10,6 +12,8 @@ interface RouteDetails {
 
 const UserHome: React.FC = () => {
   const router = useRouter()
+  const isSmallScreen = useMediaQuery('(max-width:600px)')
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const [routeDetails, setRouteDetails] = useState<RouteDetails | null>(null)
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [source, setSource] = useState<string>('')
@@ -38,6 +42,10 @@ const UserHome: React.FC = () => {
     router.push(path)
   }
 
+  const handleDrawerToggle = () => {
+    setDrawerOpen(!drawerOpen)
+  }
+
   const handleUpdateClick = () => {
     setIsEditing(true)
   }
@@ -59,31 +67,75 @@ const UserHome: React.FC = () => {
     }
   }
 
+  const drawer = (
+    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+      <Typography variant="h6" sx={{ my: 2 }}>
+        User Home
+      </Typography>
+      <List>
+        <ListItem button onClick={() => handleNavigation('/user_home')}>
+          <ListItemText primary="User Home" />
+        </ListItem>
+        <ListItem button onClick={() => handleNavigation('/our-fleet')}>
+          <ListItemText primary="Our Fleet" />
+        </ListItem>
+        <ListItem button onClick={() => handleNavigation('/revenue')}>
+          <ListItemText primary="Revenue" />
+        </ListItem>
+        <ListItem button onClick={() => handleNavigation('/contract')}>
+          <ListItemText primary="Contract" />
+        </ListItem>
+        <ListItem button onClick={() => handleNavigation('/profile')}>
+          <ListItemText primary="Profile" />
+        </ListItem>
+        <ListItem button onClick={() => handleNavigation('/help')}>
+          <ListItemText primary="Help" />
+        </ListItem>
+        <ListItem button onClick={() => handleNavigation('/')}>
+          <ListItemText primary="Logout" />
+        </ListItem>
+      </List>
+    </Box>
+  )
+
   return (
     <Box sx={{ bgcolor: '#f0f4f8', minHeight: '100vh' }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }} onClick={() => handleNavigation('/user_home')}>
-            User Home
-          </Typography>
-          <Button color="inherit" onClick={() => handleNavigation('/our-fleet')}>
-            Our Fleet
-          </Button>
-          <Button color="inherit" onClick={() => handleNavigation('/revenue')}>
-            Revenue
-          </Button>
-          <Button color="inherit" onClick={() => handleNavigation('/contract')}>
-            Contract
-          </Button>
-          <Button color="inherit" onClick={() => handleNavigation('/profile')}>
-            Profile
-          </Button>
-          <Button color="inherit" onClick={() => handleNavigation('/help')}>
-            Help
-          </Button>
-          <Button color="inherit" onClick={() => handleNavigation('/')}>
-            Logout
-          </Button>
+          {isSmallScreen ? (
+            <>
+              <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleDrawerToggle}>
+                <MenuIcon />
+              </IconButton>
+              <Drawer anchor="left" open={drawerOpen} onClose={handleDrawerToggle}>
+                {drawer}
+              </Drawer>
+            </>
+          ) : (
+            <>
+              <Typography variant="h6" sx={{ flexGrow: 1, cursor: 'pointer' }} onClick={() => handleNavigation('/user_home')}>
+                User Home
+              </Typography>
+              <Button color="inherit" onClick={() => handleNavigation('/our-fleet')}>
+                Our Fleet
+              </Button>
+              <Button color="inherit" onClick={() => handleNavigation('/revenue')}>
+                Revenue
+              </Button>
+              <Button color="inherit" onClick={() => handleNavigation('/contract')}>
+                Contract
+              </Button>
+              <Button color="inherit" onClick={() => handleNavigation('/profile')}>
+                Profile
+              </Button>
+              <Button color="inherit" onClick={() => handleNavigation('/help')}>
+                Help
+              </Button>
+              <Button color="inherit" onClick={() => handleNavigation('/')}>
+                Logout
+              </Button>
+            </>
+          )}
         </Toolbar>
       </AppBar>
       <Container>
