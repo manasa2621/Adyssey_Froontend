@@ -3,9 +3,12 @@ import axios from 'axios'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Paper from '@mui/material/Paper'
-import { AppBar, Toolbar, Button, TextField, Grid, Container } from '@mui/material'
+import { AppBar, Toolbar, Button, TextField, Grid, Container, IconButton, Avatar } from '@mui/material'
 import { useRouter } from 'next/router'
-import Link from '@mui/material/Link'
+import EditIcon from '@mui/icons-material/Edit'
+import SaveIcon from '@mui/icons-material/Save'
+import CancelIcon from '@mui/icons-material/Cancel'
+import AttachFileIcon from '@mui/icons-material/AttachFile'
 
 const Profile: React.FC = () => {
   const [profile, setProfile] = useState<any>(null)
@@ -59,13 +62,54 @@ const Profile: React.FC = () => {
       formDataToSubmit.append('status', formData.status ? 'true' : 'false')
 
       // Append files
-      if (files.insurance) formDataToSubmit.append('insurance', files.insurance)
-      if (files.tax) formDataToSubmit.append('tax', files.tax)
-      if (files.rc) formDataToSubmit.append('rc', files.rc)
+      if (files.insurance) {
+        const insuranceResponse = await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/upload`,
+          files.insurance,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+        formDataToSubmit.append('insuranceUrl', insuranceResponse.data.url)
+      } else {
+        formDataToSubmit.append('insuranceUrl', profile.insurance_url)
+      }
+
+      if (files.tax) {
+        const taxResponse = await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/upload`,
+          files.tax,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+        formDataToSubmit.append('taxUrl', taxResponse.data.url)
+      } else {
+        formDataToSubmit.append('taxUrl', profile.tax_url)
+      }
+
+      if (files.rc) {
+        const rcResponse = await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/upload`,
+          files.rc,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+        formDataToSubmit.append('rcUrl', rcResponse.data.url)
+      } else {
+        formDataToSubmit.append('rcUrl', profile.rc_url)
+      }
 
       await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/update_profile`, formDataToSubmit, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       })
 
@@ -100,9 +144,6 @@ const Profile: React.FC = () => {
     fetchProfile()
   }, [])
 
-  if (loading) return <Typography>Loading...</Typography>
-  if (error) return <Typography color="error">{error}</Typography>
-
   return (
     <Box sx={{ padding: 3 }}>
       <AppBar position="static">
@@ -131,121 +172,152 @@ const Profile: React.FC = () => {
         </Toolbar>
       </AppBar>
       <Container sx={{ marginTop: 3 }}>
-        <Paper sx={{ padding: 3 }}>
-          <Typography variant="h5" gutterBottom>
-            User Profile
-          </Typography>
-          {isEditing ? (
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField label="Name" name="name" value={formData.name || ''} onChange={handleChange} fullWidth />
+        {loading ? (
+          <Typography>Loading...</Typography>
+        ) : error ? (
+          <Typography color="error">{error}</Typography>
+        ) : (
+          <Paper sx={{ padding: 3 }}>
+            <Typography variant="h5" gutterBottom>
+              User Profile
+            </Typography>
+            {isEditing ? (
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField label="Name" name="name" value={formData.name || ''} onChange={handleChange} fullWidth />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Company Name"
+                    name="company_name"
+                    value={formData.company_name || ''}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Email"
+                    name="email"
+                    value={formData.email || ''}
+                    onChange={handleChange}
+                    fullWidth
+                    disabled
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Vehicle Number"
+                    name="vehicle_number"
+                    value={formData.vehicle_number || ''}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Vehicle Type"
+                    name="vehicle_type"
+                    value={formData.vehicle_type || ''}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Registration Number"
+                    name="registration_number"
+                    value={formData.registration_number || ''}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Button variant="outlined" component="label" fullWidth startIcon={<AttachFileIcon />}>
+                    Upload Insurance
+                    <input type="file" name="insurance" onChange={handleFileChange} hidden />
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Button variant="outlined" component="label" fullWidth startIcon={<AttachFileIcon />}>
+                    Upload Tax
+                    <input type="file" name="tax" onChange={handleFileChange} hidden />
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Button variant="outlined" component="label" fullWidth startIcon={<AttachFileIcon />}>
+                    Upload RC
+                    <input type="file" name="rc" onChange={handleFileChange} hidden />
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Button variant="contained" color="primary" onClick={handleSave} startIcon={<SaveIcon />} fullWidth>
+                    Save
+                  </Button>
+                  <Button variant="outlined" color="secondary" onClick={() => setIsEditing(false)} startIcon={<CancelIcon />} fullWidth>
+                    Cancel
+                  </Button>
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Company Name"
-                  name="company_name"
-                  value={formData.company_name || ''}
-                  onChange={handleChange}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Email"
-                  name="email"
-                  value={formData.email || ''}
-                  onChange={handleChange}
-                  fullWidth
-                  disabled
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Vehicle Number"
-                  name="vehicle_number"
-                  value={formData.vehicle_number || ''}
-                  onChange={handleChange}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Vehicle Type"
-                  name="vehicle_type"
-                  value={formData.vehicle_type || ''}
-                  onChange={handleChange}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Registration Number"
-                  name="registration_number"
-                  value={formData.registration_number || ''}
-                  onChange={handleChange}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <input type="file" name="insurance" onChange={handleFileChange} />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <input type="file" name="tax" onChange={handleFileChange} />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <input type="file" name="rc" onChange={handleFileChange} />
-              </Grid>
-              <Grid item xs={12}>
-                <Button variant="contained" color="primary" onClick={handleSave}>
-                  Save
+            ) : (
+              <Box>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">Name:</Typography>
+                    <Typography>{profile.name}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">Company Name:</Typography>
+                    <Typography>{profile.company_name}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">Email:</Typography>
+                    <Typography>{profile.email}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">Vehicle Number:</Typography>
+                    <Typography>{profile.vehicle_number}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">Vehicle Type:</Typography>
+                    <Typography>{profile.vehicle_type}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="h6">Registration Number:</Typography>
+                    <Typography>{profile.registration_number}</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Typography variant="h6">Insurance:</Typography>
+                    {profile.insurance_url ? (
+                      <Avatar variant="rounded" src={profile.insurance_url} sx={{ width: 100, height: 100 }} />
+                    ) : (
+                      <Typography>No Insurance Document</Typography>
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Typography variant="h6">Tax:</Typography>
+                    {profile.tax_url ? (
+                      <Avatar variant="rounded" src={profile.tax_url} sx={{ width: 100, height: 100 }} />
+                    ) : (
+                      <Typography>No Tax Document</Typography>
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Typography variant="h6">RC:</Typography>
+                    {profile.rc_url ? (
+                      <Avatar variant="rounded" src={profile.rc_url} sx={{ width: 100, height: 100 }} />
+                    ) : (
+                      <Typography>No RC Document</Typography>
+                    )}
+                  </Grid>
+                </Grid>
+                <Button variant="contained" color="primary" onClick={handleEdit} startIcon={<EditIcon />} sx={{ marginTop: 2 }}>
+                  Edit
                 </Button>
-              </Grid>
-            </Grid>
-          ) : (
-            <Box>
-              <Typography variant="h6">Name: {profile.name}</Typography>
-              <Typography variant="h6">Company Name: {profile.company_name}</Typography>
-              <Typography variant="h6">Email: {profile.email}</Typography>
-              <Typography variant="h6">Vehicle Number: {profile.vehicle_number}</Typography>
-              <Typography variant="h6">Vehicle Type: {profile.vehicle_type}</Typography>
-              <Typography variant="h6">Registration Number: {profile.registration_number}</Typography>
-              <Typography variant="h6">
-                Insurance:
-                {profile.insurance_url ? (
-                  <Link href={profile.insurance_url} target="_blank" rel="noopener noreferrer">
-                    View
-                  </Link>
-                ) : (
-                  ' N/A'
-                )}
-              </Typography>
-              <Typography variant="h6">
-                Tax:
-                {profile.tax_url ? (
-                  <Link href={profile.tax_url} target="_blank" rel="noopener noreferrer">
-                    View
-                  </Link>
-                ) : (
-                  ' N/A'
-                )}
-              </Typography>
-              <Typography variant="h6">
-                RC:
-                {profile.rc_url ? (
-                  <Link href={profile.rc_url} target="_blank" rel="noopener noreferrer">
-                    View
-                  </Link>
-                ) : (
-                  ' N/A'
-                )}
-              </Typography>
-              <Typography variant="h6">Status: {profile.status ? 'Active' : 'Inactive'}</Typography>
-              <Button variant="contained" color="primary" onClick={handleEdit}>
-                Edit
-              </Button>
-            </Box>
-          )}
-        </Paper>
+              </Box>
+            )}
+          </Paper>
+        )}
       </Container>
     </Box>
   )

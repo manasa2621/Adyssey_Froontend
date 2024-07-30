@@ -107,7 +107,6 @@ const SignUpForm: FC = () => {
           <FormControlLabel value="Brand" control={<Radio />} label="Brand" />
           <FormControlLabel value="Agency" control={<Radio />} label="Agency" />
           <FormControlLabel value="Partner" control={<Radio />} label="Truck Owner/Operator" />
-          <FormControlLabel value="LeasingCompany" control={<Radio />} label="Truck Leasing Company" />
         </RadioGroup>
       </FormControl>
       {errorMessage && <Box sx={{ color: 'error.main', mb: 2 }}>{errorMessage}</Box>}

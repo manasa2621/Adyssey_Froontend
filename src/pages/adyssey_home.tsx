@@ -14,6 +14,11 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import Button from '@mui/material/Button'
+import Pagination from '@mui/material/Pagination'
+import { useRouter } from 'next/router'
 
 interface TruckingData {
   id: number
@@ -33,6 +38,10 @@ interface TruckingData {
 const TruckingList: React.FC = () => {
   const [data, setData] = useState<TruckingData[]>([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [companySearchTerm, setCompanySearchTerm] = useState('')
+  const [page, setPage] = useState(1)
+  const [rowsPerPage] = useState(5)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,12 +71,35 @@ const TruckingList: React.FC = () => {
   }
 
   const filteredData = data.filter(
-    (item) => item.source && item.source.toLowerCase().includes(searchTerm.toLowerCase())
+    (item) =>
+      item.source && item.source.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      item.company_name.toLowerCase().includes(companySearchTerm.toLowerCase())
   )
+
+  // Pagination logic
+  const startIndex = (page - 1) * rowsPerPage
+  const paginatedData = filteredData.slice(startIndex, startIndex + rowsPerPage)
+
+  const handleNavigation = (path: string) => {
+    router.push(path)
+  }
 
   return (
     <Box sx={{ padding: 3 }}>
-      <Typography variant="h4" gutterBottom>
+      <AppBar position="static">
+        <Toolbar>
+          <Button color="inherit" onClick={() => handleNavigation('/adyssey_home')}>
+            Home
+          </Button>
+          <Button color="inherit" onClick={() => handleNavigation('/queries')}>
+            Queries
+          </Button>
+          <Button color="inherit" onClick={() => handleNavigation('/')}>
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <Typography variant="h4" gutterBottom sx={{ marginTop: 3 }}>
         Trucking Information
       </Typography>
       <TextField
@@ -77,6 +109,14 @@ const TruckingList: React.FC = () => {
         margin="normal"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <TextField
+        label="Search by Company Name"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        value={companySearchTerm}
+        onChange={(e) => setCompanySearchTerm(e.target.value)}
       />
       <TableContainer component={Paper}>
         <Table>
@@ -96,7 +136,7 @@ const TruckingList: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredData.map((row) => (
+            {paginatedData.map((row) => (
               <TableRow key={row.id}>
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.vehicle_number}</TableCell>
@@ -150,6 +190,15 @@ const TruckingList: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+        <Pagination
+          count={Math.ceil(filteredData.length / rowsPerPage)}
+          page={page}
+          onChange={(e, value) => setPage(value)}
+          color="primary"
+        />
+      </Box>
     </Box>
   )
 }

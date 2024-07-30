@@ -23,7 +23,7 @@ const AgencyHome: React.FC = () => {
         Welcome to the Agency Home Page
       </Typography>
       <Typography variant="body1" gutterBottom>
-        This is a simple Next.js page for agency users.
+        This is a home page for agency users.
       </Typography>
       <Link href="/" passHref>
         <Button variant="contained">Go to Home</Button>
